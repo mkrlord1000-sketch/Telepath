@@ -26,6 +26,19 @@
         .msg-bubble { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 15px; }
         .msg-own { background: #2563eb; margin-left: auto; border-bottom-right-radius: 4px; }
         .msg-other { background: #1e293b; border-bottom-left-radius: 4px; }
+        .unread-badge { background: #3b82f6; color: white; font-size: 12px; border-radius: 10px; padding: 2px 6px; min-width: 18px; text-align: center; }
+        .online-indicator { width: 8px; height: 8px; background: #10b981; border-radius: 50%; border: 2px solid #111827; position: absolute; bottom: 2px; right: 2px; }
+        .typing-indicator { display: flex; align-items: center; padding: 8px 12px; font-size: 13px; color: #94a3b8; }
+        .typing-dots { display: flex; margin-left: 4px; }
+        .typing-dot { width: 4px; height: 4px; background: #94a3b8; border-radius: 50%; margin: 0 1px; animation: typing 1.4s infinite; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+        .pinned-message { border-left: 3px solid #f59e0b; background: rgba(245, 158, 11, 0.1); }
+        .mention { color: #60a5fa; font-weight: 600; background: rgba(96, 165, 250, 0.1); padding: 0 4px; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -47,25 +60,25 @@
         <header class="glass h-16 flex items-center justify-between px-4 fixed w-full top-0 z-30">
             <button id="menu-btn" class="text-white"><i class="ph ph-list text-2xl"></i></button>
             <h1 class="font-bold text-xl">Telepath</h1>
-            <button onclick="nav.to('search')" class="text-white"><i class="ph ph-magnifying-glass text-2xl"></i></button>
+            <button id="search-btn" class="text-white"><i class="ph ph-magnifying-glass text-2xl"></i></button>
         </header>
         <main id="chats-list" class="flex-1 overflow-y-auto mt-16 pb-24 divide-y divide-slate-800/40"></main>
-        <button onclick="nav.to('create_options')" class="fixed bottom-6 right-6 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-2xl z-40">
+        <button id="create-chat-btn" class="fixed bottom-6 right-6 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-2xl z-40">
             <i class="ph-fill ph-chat-centered-text text-3xl"></i>
         </button>
     </div>
 
     <div id="create_options-screen" class="sub-screen flex flex-col">
         <header class="glass h-16 flex items-center px-4">
-            <button onclick="nav.back()" class="mr-4"><i class="ph ph-x text-2xl"></i></button>
+            <button id="back-from-options" class="mr-4"><i class="ph ph-x text-2xl"></i></button>
             <h1 class="font-bold text-lg">Новое сообщение</h1>
         </header>
         <div class="p-2">
-            <div onclick="nav.to('search')" class="flex items-center p-4 item-active rounded-xl cursor-pointer">
+            <div id="secret-chat-btn" class="flex items-center p-4 item-active rounded-xl cursor-pointer">
                 <i class="ph ph-lock-key text-2xl mr-5 text-emerald-400"></i>
                 <div><p class="font-semibold">Секретный чат</p></div>
             </div>
-            <div onclick="nav.to('create_channel')" class="flex items-center p-4 item-active rounded-xl cursor-pointer">
+            <div id="create-channel-btn" class="flex items-center p-4 item-active rounded-xl cursor-pointer">
                 <i class="ph ph-megaphone text-2xl mr-5 text-purple-400"></i>
                 <div><p class="font-semibold">Создать канал</p></div>
             </div>
@@ -74,7 +87,7 @@
 
     <div id="form_create-screen" class="sub-screen flex flex-col">
         <header class="glass h-16 flex items-center px-4">
-            <button onclick="nav.back()" class="mr-4"><i class="ph ph-arrow-left text-2xl"></i></button>
+            <button id="back-from-create" class="mr-4"><i class="ph ph-arrow-left text-2xl"></i></button>
             <h1 id="form-title" class="font-bold text-lg">Параметры</h1>
         </header>
         <div class="p-6 space-y-4">
@@ -89,26 +102,26 @@
 
     <div id="settings-screen" class="sub-screen flex flex-col">
         <div class="relative h-64 bg-gradient-to-b from-blue-700 to-slate-900 p-6 flex flex-col justify-end">
-            <button onclick="nav.back()" class="absolute top-4 left-4"><i class="ph ph-arrow-left text-2xl"></i></button>
+            <button id="back-from-settings" class="absolute top-4 left-4"><i class="ph ph-arrow-left text-2xl"></i></button>
             <div class="w-20 h-20 bg-white/20 rounded-full mb-4 flex items-center justify-center text-3xl font-bold border border-white/30" id="set-avatar">?</div>
             <h2 class="text-2xl font-bold" id="set-name">Username</h2>
             <p class="text-blue-200" id="set-email">Email</p>
         </div>
         <div class="flex-1 overflow-y-auto p-4 space-y-2">
             <p class="text-xs font-bold text-blue-500 uppercase px-2 mb-2">Аккаунт</p>
-            <div onclick="editField('username')" class="p-3 item-active rounded-xl flex items-center justify-between">
+            <div id="edit-username-btn" class="p-3 item-active rounded-xl flex items-center justify-between">
                 <div class="flex items-center"><i class="ph ph-at mr-4 text-slate-400"></i> Изменить имя пользователя</div>
                 <i class="ph ph-caret-right text-slate-600"></i>
             </div>
-            <div onclick="editField('bio')" class="p-3 item-active rounded-xl flex items-center justify-between">
+            <div id="edit-bio-btn" class="p-3 item-active rounded-xl flex items-center justify-between">
                 <div class="flex items-center"><i class="ph ph-info mr-4 text-slate-400"></i> О себе</div>
                 <i class="ph ph-caret-right text-slate-600"></i>
             </div>
             <p class="text-xs font-bold text-blue-500 uppercase px-2 mb-2 mt-4">Настройки</p>
-            <div onclick="alert('Уведомления включены')" class="p-3 item-active rounded-xl flex items-center"><i class="ph ph-bell mr-4 text-slate-400"></i> Уведомления</div>
-            <div onclick="alert('Ваш аккаунт защищен сквозным шифрованием')" class="p-3 item-active rounded-xl flex items-center"><i class="ph ph-lock mr-4 text-slate-400"></i> Конфиденциальность</div>
-            <div onclick="alert('Кэш очищен')" class="p-3 item-active rounded-xl flex items-center"><i class="ph ph-chart-pie mr-4 text-slate-400"></i> Данные и память</div>
-            <div onclick="toggleTheme()" class="p-3 item-active rounded-xl flex items-center"><i class="ph ph-palette mr-4 text-slate-400"></i> Оформление</div>
+            <div id="notifications-btn" class="p-3 item-active rounded-xl flex items-center"><i class="ph ph-bell mr-4 text-slate-400"></i> Уведомления</div>
+            <div id="privacy-btn" class="p-3 item-active rounded-xl flex items-center"><i class="ph ph-lock mr-4 text-slate-400"></i> Конфиденциальность</div>
+            <div id="data-btn" class="p-3 item-active rounded-xl flex items-center"><i class="ph ph-chart-pie mr-4 text-slate-400"></i> Данные и память</div>
+            <div id="theme-btn" class="p-3 item-active rounded-xl flex items-center"><i class="ph ph-palette mr-4 text-slate-400"></i> Оформление</div>
         </div>
     </div>
 
@@ -117,7 +130,7 @@
             <h3 class="text-lg font-bold mb-4" id="modal-title">Редактировать</h3>
             <input type="text" id="modal-input" class="input-dark mb-4">
             <div class="flex space-x-3">
-                <button onclick="closeModal()" class="flex-1 py-3 bg-slate-800 rounded-xl">Отмена</button>
+                <button id="modal-cancel" class="flex-1 py-3 bg-slate-800 rounded-xl">Отмена</button>
                 <button id="modal-save" class="flex-1 py-3 bg-blue-600 rounded-xl">Сохранить</button>
             </div>
         </div>
@@ -131,50 +144,91 @@
             <p class="text-sm text-slate-400" id="dr-email">email</p>
         </div>
         <nav class="flex-1 py-2 overflow-y-auto">
-            <div onclick="startCreate('group')" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-users-three mr-6 text-xl text-slate-400"></i> Создать группу</div>
-            <div onclick="nav.to('contacts')" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-user mr-6 text-xl text-slate-400"></i> Контакты</div>
-            <div onclick="nav.to('calls')" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-phone mr-6 text-xl text-slate-400"></i> Звонки</div>
-            <div onclick="nav.to('saved')" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-bookmark-simple mr-6 text-xl text-slate-400"></i> Избранное</div>
-            <div onclick="nav.to('settings')" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-gear mr-6 text-xl text-slate-400"></i> Настройки</div>
+            <div id="create-group-btn" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-users-three mr-6 text-xl text-slate-400"></i> Создать группу</div>
+            <div id="contacts-btn" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-user mr-6 text-xl text-slate-400"></i> Контакты</div>
+            <div id="calls-btn" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-phone mr-6 text-xl text-slate-400"></i> Звонки</div>
+            <div id="saved-btn" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-bookmark-simple mr-6 text-xl text-slate-400"></i> Избранное</div>
+            <div id="settings-btn" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-gear mr-6 text-xl text-slate-400"></i> Настройки</div>
             <div class="h-px bg-slate-800 my-2"></div>
-            <div onclick="inviteFriends()" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-user-plus mr-6 text-xl text-slate-400"></i> Пригласить друзей</div>
-            <div onclick="nav.to('features')" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-info mr-6 text-xl text-slate-400"></i> О Telepath</div>
+            <div id="invite-friends-btn" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-user-plus mr-6 text-xl text-slate-400"></i> Пригласить друзей</div>
+            <div id="features-btn" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-info mr-6 text-xl text-slate-400"></i> О Telepath</div>
+            <div id="logout-btn" class="flex items-center px-6 py-4 item-active cursor-pointer"><i class="ph ph-sign-out mr-6 text-xl text-slate-400"></i> Выйти</div>
         </nav>
     </div>
 
     <div id="contacts-screen" class="sub-screen flex flex-col">
         <header class="glass h-16 flex items-center px-4">
-            <button onclick="nav.back()" class="mr-4"><i class="ph ph-arrow-left text-2xl"></i></button>
+            <button id="back-from-contacts" class="mr-4"><i class="ph ph-arrow-left text-2xl"></i></button>
             <h1 class="font-bold text-lg">Контакты</h1>
         </header>
         <div class="p-4 space-y-2">
-            <div onclick="inviteFriends()" class="flex items-center p-3 item-active rounded-xl cursor-pointer"><i class="ph ph-user-plus mr-4 text-blue-400"></i> Пригласить друзей</div>
-            <div onclick="alert('Поиск запущен... никого не найдено')" class="flex items-center p-3 item-active rounded-xl cursor-pointer"><i class="ph ph-map-pin mr-4 text-emerald-400"></i> Найти людей рядом</div>
+            <div id="invite-friends-contacts" class="flex items-center p-3 item-active rounded-xl cursor-pointer"><i class="ph ph-user-plus mr-4 text-blue-400"></i> Пригласить друзей</div>
+            <div id="find-people-btn" class="flex items-center p-3 item-active rounded-xl cursor-pointer"><i class="ph ph-map-pin mr-4 text-emerald-400"></i> Найти людей рядом</div>
+        </div>
+    </div>
+
+    <div id="calls-screen" class="sub-screen flex flex-col">
+        <header class="glass h-16 flex items-center px-4">
+            <button id="back-from-calls" class="mr-4"><i class="ph ph-arrow-left text-2xl"></i></button>
+            <h1 class="font-bold text-lg">Звонки</h1>
+        </header>
+        <div class="p-4">
+            <p class="text-slate-500 text-center py-8">История звонков пуста</p>
+        </div>
+    </div>
+
+    <div id="saved-screen" class="sub-screen flex flex-col">
+        <header class="glass h-16 flex items-center px-4">
+            <button id="back-from-saved" class="mr-4"><i class="ph ph-arrow-left text-2xl"></i></button>
+            <h1 class="font-bold text-lg">Избранное</h1>
+        </header>
+        <div class="p-4">
+            <p class="text-slate-500 text-center py-8">Избранных сообщений нет</p>
+        </div>
+    </div>
+
+    <div id="search-screen" class="sub-screen flex flex-col">
+        <header class="glass h-16 flex items-center px-4">
+            <button id="back-from-search" class="mr-4"><i class="ph ph-arrow-left text-2xl"></i></button>
+            <div class="flex-1"><input type="text" id="search-input" class="input-dark bg-slate-800" placeholder="Поиск..."></div>
+        </header>
+        <div class="p-4">
+            <p class="text-slate-500 text-center py-8">Начните поиск</p>
         </div>
     </div>
 
     <div id="features-screen" class="sub-screen flex flex-col bg-[#0b1120] p-6">
-        <button onclick="nav.back()" class="mb-6"><i class="ph ph-arrow-left text-2xl"></i></button>
+        <button id="back-from-features" class="mb-6"><i class="ph ph-arrow-left text-2xl"></i></button>
         <div class="flex-1 flex flex-col items-center text-center">
             <div class="w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center mb-4 shadow-xl shadow-blue-500/20"><i class="ph-fill ph-brain text-4xl"></i></div>
             <h2 class="text-2xl font-bold">Telepath Alpha</h2>
             <p class="text-slate-500 mt-2 mb-8">Next-gen communication system</p>
             <div class="space-y-4 text-slate-400 text-sm">
                 <p>Мы строим свободную платформу без цензуры и слежки.</p>
-                <div onclick="copyCard()" class="bg-slate-800 p-4 rounded-2xl border border-slate-700 active:scale-95 transition cursor-pointer">
+                <div id="donate-card" class="bg-slate-800 p-4 rounded-2xl border border-slate-700 active:scale-95 transition cursor-pointer">
                     <p class="text-white font-bold mb-1">Поддержать проект</p>
                     <p class="text-blue-400 text-lg tracking-wider">2202 2080 1238 3916</p>
                     <p class="text-[10px] mt-1 text-slate-500">Сбербанк (нажмите, чтобы скопировать)</p>
                 </div>
             </div>
-            <button onclick="showTerms()" class="mt-auto py-4 text-blue-400 text-sm">Условия использования</button>
+            <button id="terms-btn" class="mt-auto py-4 text-blue-400 text-sm">Условия использования</button>
         </div>
     </div>
 
     <div id="chat-screen" class="sub-screen flex flex-col">
         <header class="glass h-16 flex items-center px-4 fixed w-full top-0 z-30">
-            <button onclick="nav.back()"><i class="ph ph-arrow-left text-2xl"></i></button>
-            <h1 id="chat-title" class="ml-4 font-bold">Чат</h1>
+            <button id="back-from-chat" class="mr-4"><i class="ph ph-arrow-left text-2xl"></i></button>
+            <h1 id="chat-title" class="font-bold">Чат</h1>
+            <div class="ml-auto">
+                <div id="typing-indicator" class="typing-indicator hidden">
+                    <span>печатает</span>
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
         </header>
         <div id="messages-container" class="flex-1 overflow-y-auto mt-16 pb-20 p-4 space-y-2"></div>
         <div class="p-3 bg-slate-900 flex items-center">
@@ -188,12 +242,25 @@
         const SB_KEY = 'sb_publishable_Pic7FaRy9Vzze6E5df-MqQ_TPc_rzEP';
         const sb = supabase.createClient(SB_URL, SB_KEY);
 
-        const state = { user: null, activeChat: null, screenStack: [], creatingType: 'group' };
+        const state = { 
+            user: null, 
+            activeChat: null, 
+            screenStack: [], 
+            creatingType: 'group',
+            isSignUp: false,
+            onlineUsers: new Set(),
+            unreadCounts: {},
+            typingUsers: {},
+            replyTo: null
+        };
 
         const nav = {
             to: (id) => {
                 const el = document.getElementById(id + '-screen');
-                if (el) { el.classList.add('active'); state.screenStack.push(id); }
+                if (el) { 
+                    el.classList.add('active'); 
+                    state.screenStack.push(id); 
+                }
                 ui.closeDrawer();
             },
             back: () => {
@@ -206,76 +273,249 @@
             closeDrawer: () => {
                 document.getElementById('drawer').classList.remove('open');
                 document.getElementById('drawer-overlay').classList.remove('open');
+            },
+            showModal: () => {
+                document.getElementById('modal_edit').classList.remove('hidden');
+                document.getElementById('modal_edit').classList.add('flex');
+            },
+            hideModal: () => {
+                document.getElementById('modal_edit').classList.add('hidden');
+                document.getElementById('modal_edit').classList.remove('flex');
             }
         };
 
-        // --- AUTH & INIT ---
+        // --- ФУНКЦИЯ LOADPROFILE (ИСПРАВЛЕНА) ---
+        async function loadProfile() {
+            if (!state.user) return;
+            
+            const { data } = await sb.from('profiles').select('*').eq('id', state.user.id).single();
+            if (data) {
+                const name = data.username || 'NoName';
+                document.getElementById('dr-name').innerText = name;
+                document.getElementById('dr-email').innerText = state.user.email;
+                document.getElementById('dr-avatar').innerText = name[0].toUpperCase();
+                document.getElementById('set-name').innerText = name;
+                document.getElementById('set-email').innerText = state.user.email;
+                document.getElementById('set-avatar').innerText = name[0].toUpperCase();
+            }
+        }
+
+        // --- АВТОРИЗАЦИЯ ---
         async function init() {
             const { data: { session } } = await sb.auth.getSession();
             if (session) {
                 state.user = session.user;
                 document.getElementById('auth-screen').classList.add('hidden-screen');
                 document.getElementById('app-screen').classList.remove('hidden-screen');
-                loadProfile();
-                loadChats();
+                await loadProfile();
+                await loadChats();
             }
         }
 
-        // --- PROFILE EDITING ---
+        document.getElementById('toggle-auth').addEventListener('click', () => {
+            state.isSignUp = !state.isSignUp;
+            const usernameField = document.getElementById('username-field');
+            const submitBtn = document.getElementById('submit-btn');
+            const toggleBtn = document.getElementById('toggle-auth');
+            
+            if (state.isSignUp) {
+                usernameField.classList.remove('hidden');
+                submitBtn.textContent = 'Создать аккаунт';
+                toggleBtn.textContent = 'Уже есть аккаунт? Войти';
+            } else {
+                usernameField.classList.add('hidden');
+                submitBtn.textContent = 'Войти';
+                toggleBtn.textContent = 'Нет аккаунта? Создать';
+            }
+        });
+
+        document.getElementById('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (state.isSignUp) {
+                const username = document.getElementById('username').value;
+                const { data, error } = await sb.auth.signUp({
+                    email,
+                    password
+                });
+                if (!error) {
+                    await sb.from('profiles').insert([{
+                        id: data.user.id,
+                        username: username
+                    }]);
+                    alert('Аккаунт создан! Теперь войдите.');
+                    // Сбросить форму
+                    state.isSignUp = false;
+                    document.getElementById('username-field').classList.add('hidden');
+                    document.getElementById('submit-btn').textContent = 'Войти';
+                    document.getElementById('toggle-auth').textContent = 'Нет аккаунта? Создать';
+                } else {
+                    alert('Ошибка регистрации: ' + error.message);
+                }
+            } else {
+                const { error } = await sb.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                if (!error) {
+                    const { data: { session } } = await sb.auth.getSession();
+                    state.user = session.user;
+                    document.getElementById('auth-screen').classList.add('hidden-screen');
+                    document.getElementById('app-screen').classList.remove('hidden-screen');
+                    await loadProfile();
+                    await loadChats();
+                } else {
+                    alert('Ошибка входа: ' + error.message);
+                }
+            }
+        });
+
+        // --- НАЗНАЧЕНИЕ ВСЕХ ОБРАБОТЧИКОВ КНОПОК ---
+        function setupEventListeners() {
+            // Меню
+            document.getElementById('menu-btn').addEventListener('click', () => {
+                document.getElementById('drawer').classList.add('open');
+                document.getElementById('drawer-overlay').classList.add('open');
+            });
+
+            document.getElementById('drawer-overlay').addEventListener('click', ui.closeDrawer);
+
+            // Поиск
+            document.getElementById('search-btn').addEventListener('click', () => nav.to('search'));
+            document.getElementById('back-from-search').addEventListener('click', nav.back);
+
+            // Создание чата
+            document.getElementById('create-chat-btn').addEventListener('click', () => nav.to('create_options'));
+            
+            // Создание опций
+            document.getElementById('back-from-options').addEventListener('click', nav.back);
+            document.getElementById('secret-chat-btn').addEventListener('click', () => {
+                state.creatingType = 'secret';
+                document.getElementById('form-title').textContent = 'Новый секретный чат';
+                nav.to('form_create');
+            });
+            document.getElementById('create-channel-btn').addEventListener('click', () => {
+                state.creatingType = 'channel';
+                document.getElementById('form-title').textContent = 'Новый канал';
+                nav.to('form_create');
+            });
+
+            // Форма создания
+            document.getElementById('back-from-create').addEventListener('click', nav.back);
+            document.getElementById('confirm-create-btn').addEventListener('click', createChat);
+
+            // Настройки
+            document.getElementById('back-from-settings').addEventListener('click', nav.back);
+            document.getElementById('edit-username-btn').addEventListener('click', () => editField('username'));
+            document.getElementById('edit-bio-btn').addEventListener('click', () => editField('bio'));
+            document.getElementById('notifications-btn').addEventListener('click', () => alert('Уведомления включены'));
+            document.getElementById('privacy-btn').addEventListener('click', () => alert('Ваш аккаунт защищен сквозным шифрованием'));
+            document.getElementById('data-btn').addEventListener('click', () => alert('Кэш очищен'));
+            document.getElementById('theme-btn').addEventListener('click', toggleTheme);
+
+            // Модальное окно
+            document.getElementById('modal-cancel').addEventListener('click', ui.hideModal);
+            document.getElementById('modal-save').addEventListener('click', saveModal);
+
+            // Боковое меню
+            document.getElementById('create-group-btn').addEventListener('click', () => {
+                state.creatingType = 'group';
+                document.getElementById('form-title').textContent = 'Новая группа';
+                nav.to('form_create');
+            });
+            document.getElementById('contacts-btn').addEventListener('click', () => nav.to('contacts'));
+            document.getElementById('calls-btn').addEventListener('click', () => nav.to('calls'));
+            document.getElementById('saved-btn').addEventListener('click', () => nav.to('saved'));
+            document.getElementById('settings-btn').addEventListener('click', () => nav.to('settings'));
+            document.getElementById('invite-friends-btn').addEventListener('click', inviteFriends);
+            document.getElementById('features-btn').addEventListener('click', () => nav.to('features'));
+            document.getElementById('logout-btn').addEventListener('click', logout);
+
+            // Контакты
+            document.getElementById('back-from-contacts').addEventListener('click', nav.back);
+            document.getElementById('invite-friends-contacts').addEventListener('click', inviteFriends);
+            document.getElementById('find-people-btn').addEventListener('click', () => alert('Поиск запущен... никого не найдено'));
+
+            // Звонки
+            document.getElementById('back-from-calls').addEventListener('click', nav.back);
+
+            // Избранное
+            document.getElementById('back-from-saved').addEventListener('click', nav.back);
+
+            // Особенности
+            document.getElementById('back-from-features').addEventListener('click', nav.back);
+            document.getElementById('donate-card').addEventListener('click', copyCard);
+            document.getElementById('terms-btn').addEventListener('click', showTerms);
+
+            // Чат
+            document.getElementById('back-from-chat').addEventListener('click', nav.back);
+            document.getElementById('send-btn').addEventListener('click', sendMessage);
+            document.getElementById('message-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+        }
+
+        // --- РЕДАКТИРОВАНИЕ ПРОФИЛЯ ---
         let currentEditField = '';
         function editField(field) {
             currentEditField = field;
-            const modal = document.getElementById('modal_edit');
             const input = document.getElementById('modal-input');
             const title = document.getElementById('modal-title');
             
             title.innerText = field === 'username' ? 'Ваше имя' : 'О себе';
             input.placeholder = field === 'username' ? '@username' : 'Пару слов о себе...';
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            ui.showModal();
         }
 
-        function closeModal() {
-            document.getElementById('modal_edit').classList.add('hidden');
-        }
-
-        document.getElementById('modal-save').onclick = async () => {
+        async function saveModal() {
             const val = document.getElementById('modal-input').value;
+            if (!val.trim()) {
+                alert('Поле не может быть пустым');
+                return;
+            }
+            
             const update = currentEditField === 'username' ? { username: val } : { bio: val };
             const { error } = await sb.from('profiles').update(update).eq('id', state.user.id);
             if (!error) {
                 alert('Обновлено!');
-                loadProfile();
-                closeModal();
+                await loadProfile();
+                ui.hideModal();
+            } else {
+                alert('Ошибка обновления: ' + error.message);
             }
-        };
-
-        // --- CREATE GROUP / CHANNEL ---
-        function startCreate(type) {
-            state.creatingType = type;
-            document.getElementById('form-title').innerText = type === 'group' ? 'Новая группа' : 'Новый канал';
-            nav.to('form_create');
         }
 
-        document.getElementById('confirm-create-btn').onclick = async () => {
+        // --- СОЗДАНИЕ ЧАТА ---
+        async function createChat() {
             const name = document.getElementById('new-chat-name').value;
-            if (!name) return;
+            if (!name.trim()) {
+                alert('Введите название');
+                return;
+            }
 
-            const { data: chat, error: chatErr } = await sb.from('chats').insert([{
+            const chatData = {
                 name: name,
                 owner_id: state.user.id,
-                is_channel: state.creatingType === 'channel'
-            }]).select().single();
+                is_channel: state.creatingType === 'channel',
+                is_private: state.creatingType === 'secret'
+            };
 
-            if (chat) {
+            const { data: chat, error: chatErr } = await sb.from('chats').insert([chatData]).select().single();
+
+            if (chat && !chatErr) {
                 await sb.from('chat_members').insert([{ chat_id: chat.id, user_id: state.user.id }]);
                 alert('Успешно создано!');
-                nav.back(); nav.back();
-                loadChats();
+                nav.back(); 
+                nav.back();
+                await loadChats();
+            } else {
+                alert('Ошибка создания: ' + (chatErr?.message || 'Неизвестная ошибка'));
             }
-        };
+        }
 
-        // --- FEATURES & HELPERS ---
+        // --- ФУНКЦИИ ПОМОЩНИКИ ---
         function copyCard() {
             navigator.clipboard.writeText('2202208012383916');
             alert('Номер карты скопирован. Спасибо за поддержку!');
@@ -296,55 +536,185 @@
         }
 
         function toggleTheme() {
-            alert("Тема переключена (автоматически подстраивается под систему)");
-        }
-
-        // --- CORE CHAT LOGIC ---
-        async function loadProfile() {
-            const { data } = await sb.from('profiles').select('*').eq('id', state.user.id).single();
-            if (data) {
-                const name = data.username || 'NoName';
-                document.getElementById('dr-name').innerText = name;
-                document.getElementById('dr-email').innerText = state.user.email;
-                document.getElementById('dr-avatar').innerText = name[0].toUpperCase();
-                document.getElementById('set-name').innerText = name;
-                document.getElementById('set-email').innerText = state.user.email;
-                document.getElementById('set-avatar').innerText = name[0].toUpperCase();
+            const isDark = document.body.classList.contains('dark');
+            if (isDark) {
+                document.body.classList.remove('dark');
+                alert('Тема переключена на светлую');
+            } else {
+                document.body.classList.add('dark');
+                alert('Тема переключена на темную');
             }
         }
 
+        async function logout() {
+            await sb.auth.signOut();
+            state.user = null;
+            document.getElementById('app-screen').classList.add('hidden-screen');
+            document.getElementById('auth-screen').classList.remove('hidden-screen');
+            state.screenStack = [];
+            ui.closeDrawer();
+        }
+
+        // --- ЗАГРУЗКА ЧАТОВ ---
         async function loadChats() {
             const list = document.getElementById('chats-list');
             list.innerHTML = '';
-            const { data: members } = await sb.from('chat_members').select('chat_id').eq('user_id', state.user.id);
+            
+            const { data: members, error: membersError } = await sb
+                .from('chat_members')
+                .select('chat_id')
+                .eq('user_id', state.user.id);
+            
+            if (membersError) {
+                console.error('Ошибка загрузки чатов:', membersError);
+                return;
+            }
+            
             if (members?.length) {
                 const ids = members.map(m => m.chat_id);
-                const { data: chats } = await sb.from('chats').select('*').in('id', ids);
+                const { data: chats, error: chatsError } = await sb
+                    .from('chats')
+                    .select('*')
+                    .in('id', ids);
+                
+                if (chatsError) {
+                    console.error('Ошибка загрузки чатов:', chatsError);
+                    return;
+                }
+                
                 chats.forEach(chat => {
                     const div = document.createElement('div');
-                    div.className = 'p-4 item-active flex items-center cursor-pointer';
-                    div.innerHTML = `<div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center font-bold mr-4">${chat.name[0]}</div>
-                                     <div class="flex-1"><h4 class="font-bold">${chat.name}</h4><p class="text-sm text-slate-500">Нажмите, чтобы войти</p></div>`;
-                    div.onclick = () => openChat(chat);
+                    div.className = 'p-4 item-active flex items-center cursor-pointer chat-item';
+                    div.setAttribute('data-chat-id', chat.id);
+                    div.innerHTML = `
+                        <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center font-bold mr-4">
+                            ${chat.name ? chat.name[0].toUpperCase() : 'Ч'}
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold">${chat.name || 'Без названия'}</h4>
+                            <p class="text-sm text-slate-500">Нажмите, чтобы войти</p>
+                        </div>
+                    `;
+                    div.addEventListener('click', () => openChat(chat));
                     list.appendChild(div);
                 });
+            } else {
+                list.innerHTML = '<p class="text-center text-slate-500 py-8">У вас пока нет чатов</p>';
             }
         }
 
+        // --- ОТКРЫТИЕ ЧАТА И СООБЩЕНИЯ ---
         function openChat(chat) {
             state.activeChat = chat;
-            document.getElementById('chat-title').innerText = chat.name;
+            document.getElementById('chat-title').textContent = chat.name || 'Чат';
             nav.to('chat');
-            // Logic for loading messages would go here (same as previous iteration)
+            loadMessages(chat.id);
+            setupTypingIndicator(chat.id);
         }
 
-        document.getElementById('menu-btn').onclick = () => {
-            document.getElementById('drawer').classList.add('open');
-            document.getElementById('drawer-overlay').classList.add('open');
-        };
-        document.getElementById('drawer-overlay').onclick = ui.closeDrawer;
+        async function loadMessages(chatId) {
+            const container = document.getElementById('messages-container');
+            container.innerHTML = '';
+            
+            const { data: messages, error } = await sb
+                .from('messages')
+                .select('*, profiles(username)')
+                .eq('chat_id', chatId)
+                .order('created_at', { ascending: true });
+            
+            if (error) {
+                console.error('Ошибка загрузки сообщений:', error);
+                return;
+            }
+            
+            if (messages) {
+                messages.forEach(msg => {
+                    const isOwn = msg.user_id === state.user.id;
+                    const div = document.createElement('div');
+                    div.className = `msg-bubble ${isOwn ? 'msg-own' : 'msg-other'}`;
+                    div.innerHTML = `
+                        ${!isOwn ? `<div class="font-semibold text-xs mb-1">${msg.profiles?.username || 'Аноним'}</div>` : ''}
+                        <div>${msg.content}</div>
+                        <div class="text-xs opacity-70 mt-1 text-right">
+                            ${new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+                container.scrollTop = container.scrollHeight;
+            }
+        }
 
-        init();
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const content = input.value.trim();
+            if (!content || !state.activeChat) return;
+
+            const { error } = await sb.from('messages').insert([{
+                chat_id: state.activeChat.id,
+                user_id: state.user.id,
+                content: content,
+                reply_to: state.replyTo?.id || null
+            }]);
+
+            if (!error) {
+                input.value = '';
+                if (state.replyTo) {
+                    state.replyTo = null;
+                }
+                loadMessages(state.activeChat.id);
+            } else {
+                alert('Ошибка отправки сообщения: ' + error.message);
+            }
+        }
+
+        // --- ИНДИКАТОР ПЕЧАТАНИЯ ---
+        function setupTypingIndicator(chatId) {
+            let typingTimeout;
+            
+            document.getElementById('message-input').addEventListener('input', () => {
+                if (!state.activeChat) return;
+                
+                // Отправляем событие typing
+                sb.channel(`chat:${chatId}`)
+                    .send({
+                        type: 'broadcast',
+                        event: 'typing',
+                        payload: { userId: state.user.id }
+                    });
+                
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => {
+                    sb.channel(`chat:${chatId}`)
+                        .send({
+                            type: 'broadcast',
+                            event: 'stop-typing',
+                            payload: { userId: state.user.id }
+                        });
+                }, 3000);
+            });
+
+            // Слушаем события от других
+            const channel = sb.channel(`chat:${chatId}`);
+            
+            channel.on('broadcast', { event: 'typing' }, ({ payload }) => {
+                if (payload.userId !== state.user.id) {
+                    document.getElementById('typing-indicator').classList.remove('hidden');
+                }
+            });
+
+            channel.on('broadcast', { event: 'stop-typing' }, ({ payload }) => {
+                document.getElementById('typing-indicator').classList.add('hidden');
+            });
+
+            channel.subscribe();
+        }
+
+        // --- ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ---
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            init();
+        });
     </script>
 </body>
-</html>
+                    </html>
